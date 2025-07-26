@@ -5,3 +5,11 @@ bin/
 *.exe
 *.lib
 *.a
+bin_obj/
+bin/
+__shared_libs/
+
+*.o
+*.exe
+*.lib
+*.a
