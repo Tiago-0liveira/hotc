@@ -15,6 +15,7 @@ This document outlines possible and future features for the Hot Reloading librar
 - Logging and error reporting
 - Integration with build systems (e.g., Make, CMake)
 - API for manual reload control (ENUM MANUAL, AUTO)
+- Thread mode support for reloading
 
 ---
 

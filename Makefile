@@ -5,7 +5,7 @@ LINK_FLAGS =
 
 INCLUDES = -I includes/
 LIB_FOLDER = lib/
-OBJ_DIR = lib_obj/
+OBJ_DIR = bin_obj/
 BIN_DIR = bin/
 EXAMPLES_DIR = examples/
 
@@ -67,7 +67,7 @@ $(OBJ_DIR)%.o: $(LIB_FOLDER)%.c
 	@$(CC) $(CFLAGS) -o $@ -c $<
 
 # Pattern rule for examples: make ex-foo
-ex-%: $(EXAMPLES_DIR)%.c $(STATIC_LIB)
+ex-%: $(EXAMPLES_DIR)%/main.c $(STATIC_LIB)
 	@$(MKDIR_BIN)
 ifeq ($(OS),Windows_NT)
 	@if not exist "$(BIN_DIR)$*" mkdir "$(BIN_DIR)$*"
@@ -77,7 +77,7 @@ endif
 	
 	@$(CC) $(CFLAGS) $(INCLUDES) $< $(STATIC_LIB) -o $(BIN_DIR)$*/$*$(EXE)
 	$(MSG1)
-	@echo Running example $*:
+	@echo Running Example [$*]:
 	@$(BIN_DIR)$*/$*$(EXE)
 
 # Clean rules

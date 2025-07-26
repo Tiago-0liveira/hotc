@@ -1,5 +1,6 @@
-lib_obj/
+bin_obj/
 bin/
+__shared_libs/
 
 *.o
 *.exe
