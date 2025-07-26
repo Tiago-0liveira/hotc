@@ -1,6 +1,12 @@
 # Hot Reloading Library (C) - Features
 
-This document outlines possible and future features for the Hot Reloading library in C.
+This document outlines included, possible and future features for the Hot Reloading library in C.
+
+## Included Features
+
+- Hot reloading of shared libraries
+- Automatic detection of library changes
+- Support for multiple platforms (Windows, Linux (not tested yet))
 
 ## Proposed Features
 
@@ -9,7 +15,6 @@ This document outlines possible and future features for the Hot Reloading librar
 
 ## Future Ideas
 
-- Dynamic module reloading
 - Cross-platform compatibility
 - Customizable reload triggers
 - Logging and error reporting
