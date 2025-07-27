@@ -108,7 +108,7 @@ void *get_lib_address(t_lib_info *lib_info, const char *symbol_name)
 
 int compile_shared_library(t_lib_info *lib_info)
 {
-	char command[512];
+	char command[700];
 	
 	#ifdef _WIN32
 		snprintf(command, sizeof(command), "gcc -shared -o %s %s", lib_info->lib_path, lib_info->source_path);

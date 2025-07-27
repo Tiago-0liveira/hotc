@@ -14,12 +14,13 @@ LIB_OBJS = $(patsubst $(LIB_FOLDER)%.c, $(OBJ_DIR)%.o, $(LIB_SRC))
 
 # OS compatibility
 ifeq ($(OS),Windows_NT)
-	Color_Off =
-	IRed =
-	IGreen =
-	IYellow =
-	ICyan =
 	OK = [OK]
+
+	# Messages
+	MSG1 = @echo "Compiled Successfully $(OK)"
+	MSG2 = @echo "Cleaned Successfully $(OK)"
+	MSG3 = @echo "Cleaned $(NAME) Successfully $(OK)"
+
 	RM = del /Q /S
 	MKDIR = mkdir
 	MKDIR_BIN = if not exist "$(subst /,\,$(BIN_DIR))" mkdir "$(subst /,\,$(BIN_DIR))"
@@ -27,6 +28,7 @@ ifeq ($(OS),Windows_NT)
 
 	EXE = .exe
 	STATIC_LIB = $(BIN_DIR)hotc.lib
+	WIN_FLAGS = 
 	ARCHIVER = ar
 	ARFLAGS = rcs
 else
@@ -36,6 +38,12 @@ else
 	IYellow = \033[0;93m
 	ICyan = \033[0;96m
 	OK = ✔︎
+
+	# Messages
+	MSG1 = @echo "$(IGreen)Compiled Successfully $(OK)$(Color_Off)"
+	MSG2 = @echo "$(IYellow)Cleaned Successfully $(OK)$(Color_Off)"
+	MSG3 = @echo "$(ICyan)Cleaned $(NAME) Successfully $(OK)$(Color_Off)"
+
 	RM = rm -rf
 	MKDIR = mkdir -p
 	MKDIR_BIN = $(MKDIR) $(BIN_DIR)
@@ -43,14 +51,10 @@ else
 
 	EXE =
 	STATIC_LIB = $(BIN_DIR)libhotc.a
+	LINUX_FLAGS = -ldl
 	ARCHIVER = ar
 	ARFLAGS = rcs
 endif
-
-# Messages
-MSG1 = @echo $(IGreen)Compiled Successfully $(OK)$(Color_Off)
-MSG2 = @echo $(IYellow)Cleaned Successfully $(OK)$(Color_Off)
-MSG3 = @echo $(ICyan)Cleaned $(NAME) Successfully $(OK)$(Color_Off)
 
 # Default: build static library
 all: $(STATIC_LIB)
@@ -71,11 +75,12 @@ ex-%: $(EXAMPLES_DIR)%/main.c $(STATIC_LIB)
 	@$(MKDIR_BIN)
 ifeq ($(OS),Windows_NT)
 	@if not exist "$(BIN_DIR)$*" mkdir "$(BIN_DIR)$*"
+	@$(CC) $(CFLAGS) $(INCLUDES) $< $(STATIC_LIB) -o $(BIN_DIR)$*/$*$(EXE)
 else
-	@$(MKDIR) $*
+	@$(MKDIR) $(BIN_DIR)$*
+	@$(CC) $(CFLAGS) $(INCLUDES) $< $(STATIC_LIB) -o $(BIN_DIR)$*/$*$(EXE) $(LINUX_FLAGS)
 endif
 	
-	@$(CC) $(CFLAGS) $(INCLUDES) $< $(STATIC_LIB) -o $(BIN_DIR)$*/$*$(EXE)
 	$(MSG1)
 	@echo Running Example [$*]:
 	@$(BIN_DIR)$*/$*$(EXE)

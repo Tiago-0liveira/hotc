@@ -2,8 +2,10 @@
 #define HOTC_H
 
 #include <hotc_io.h>
-
+#include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
 #ifdef _WIN32
     #include <windows.h>
