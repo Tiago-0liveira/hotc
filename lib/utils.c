@@ -1,5 +1,11 @@
 #include <hotc.h>
 
+#ifdef _WIN32
+	#include <windows.h>
+#else
+	#include <sys/time.h>
+#endif
+
 void reset_lib_info(t_lib_info *lib_info)
 {
 	if (lib_info == NULL) return;
@@ -13,27 +19,12 @@ t_lib_info *find_open_lib(const char *source_path)
 {
 	for (int i = 0; i < MAX_OPEN_LIBS; i++) {
 		t_lib_info *lib_info = &open_libs[i];
-		if (lib_info->handle && strcmp(lib_info->source_path, source_path) == 0) {
+		if (strcmp(lib_info->source_path, source_path) == 0) {
 			return lib_info;
 		}
 	}
 
 	return NULL;
-}
-
-t_lib_info *find_next_lib(const char *source_path)
-{
-	for (int i = 0; i < MAX_OPEN_LIBS; i++) {
-		t_lib_info *lib_info = &open_libs[i];
-		if (lib_info->handle == NULL) {
-			setup_library(lib_info, source_path);
-			compile_shared_library(lib_info);
-
-			return lib_info;
-		}
-	}
-
-	return NULL; // No available slot found
 }
 
 char *get_source_filename(const char *path)
@@ -130,4 +121,25 @@ char *get_lib_path(const char *source_path, const char *filename)
 	#endif
 
 	return lib_path;
+}
+
+void cleanup_shared_library(t_lib_info *lib_info)
+{
+	if (!lib_info) return;
+
+	unload_shared_library(lib_info);
+	memset(lib_info->name, 0, sizeof(lib_info->name));
+	memset(lib_info->lib_path, 0, sizeof(lib_info->lib_path));
+	memset(lib_info->source_path, 0, sizeof(lib_info->source_path));
+}
+
+timestamp_t	get_time_ms()
+{
+	#ifdef _WIN32
+		return GetTickCount64();
+	#else
+		struct timeval tv;
+        gettimeofday(&tv, NULL);
+        return (timestamp_t)(tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+	#endif	
 }

@@ -1,10 +1,6 @@
-#ifdef _WIN32
-    #define EXPORT __declspec(dllexport)
-#else
-    #define EXPORT
-#endif
+#include <hotc_shared.h>
 
 EXPORT const char* print_message() 
 {
-    return "Another k12mdk1m2dk1md1212d12d12d2dm";
+    return "Another k12md212dddddd121d2k1m2dk1md1212d12d12d2dm";
 }
