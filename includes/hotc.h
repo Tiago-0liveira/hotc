@@ -59,8 +59,8 @@ extern t_lib_info open_libs[MAX_OPEN_LIBS];
 
 // hot.c
 void		check_and_update_libs();
-t_lib_info	*register_shared_library(const char *path, event_handlers handlers);
-void 		unregister_shared_library(const char *path);
+t_lib_info	*register_shared_library(const char *source_path, event_handlers handlers);
+void 		unregister_shared_library(const char *source_path);
 void		load_shared_library(t_lib_info *lib_info);
 int			unload_shared_library(t_lib_info *lib_info);
 void		*get_lib_address(const t_lib_info *lib_info, const char *symbol_name);
@@ -68,7 +68,7 @@ int			compile_shared_library(const t_lib_info *lib_info);
 
 // utils.c
 void		reset_lib_info(t_lib_info *lib_info);
-t_lib_info	*find_open_lib(const char *name);
+t_lib_info	*find_open_lib(const char *source_path);
 char		*get_source_filename(const char *path);
 int			setup_library(t_lib_info *lib_info, const char *source_path);
 char		*get_lib_path(const char *source_path, const char *filename);
