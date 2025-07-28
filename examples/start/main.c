@@ -19,8 +19,8 @@ int main(int argc, char **argv)
 {
 	(void)argc;(void)argv;
 
-	register_shared_library("./examples/start/libshared.c", HOTC_ON_LOAD(LAMBDA_libshared));
-	register_shared_library("./examples/start/lib2.c", HOTC_ON_LOAD(LAMBDA_lib2));
+	register_shared_library("./examples/start/libshared.c", HOTC_ON_LOAD(LAMBDA_libshared), "-I ./includes/");
+	register_shared_library("./examples/start/lib2.c", HOTC_ON_LOAD(LAMBDA_lib2), NULL);
 
 	while (1) {
 		check_and_update_libs();

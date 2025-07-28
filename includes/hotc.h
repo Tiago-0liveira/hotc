@@ -26,6 +26,7 @@ typedef void* t_lib_handle;
 
 #define MAX_OPEN_LIBS 20
 #define MAX_NAME_LENGTH 256
+#define MAX_COMPILE_FLAGS_LENGTH 1024
 #define DLL_DIR "./__shared_libs/"
 #define DLL_DIR_LEN 16
 
@@ -46,12 +47,13 @@ typedef struct {
 
 
 typedef struct s_lib_info {
-    int last_modified;
-    char name[MAX_NAME_LENGTH];
-    char source_path[MAX_NAME_LENGTH];
-    char lib_path[MAX_NAME_LENGTH];
+	int last_modified;
+	char name[MAX_NAME_LENGTH];
+	char source_path[MAX_NAME_LENGTH];
+	char lib_path[MAX_NAME_LENGTH];
+	char extra_compile_flags[MAX_COMPILE_FLAGS_LENGTH];
 	event_handlers handlers;
-    t_lib_handle handle;
+	t_lib_handle handle;
 } t_lib_info;
 
 
@@ -59,7 +61,7 @@ extern t_lib_info open_libs[MAX_OPEN_LIBS];
 
 // hot.c
 void		check_and_update_libs();
-t_lib_info	*register_shared_library(const char *source_path, event_handlers handlers);
+t_lib_info	*register_shared_library(const char *source_path, event_handlers handlers, const char *extra_compile_flags);
 void 		unregister_shared_library(const char *source_path);
 void		load_shared_library(t_lib_info *lib_info);
 int			unload_shared_library(t_lib_info *lib_info);

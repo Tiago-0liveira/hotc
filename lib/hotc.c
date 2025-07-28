@@ -47,11 +47,12 @@ void check_and_update_libs()
  * This function searches for the next available slot in the open_libs array
  * and initializes the t_lib_info structure for that slot.
  * 
- * @param source_path 
+ * @param source_path The source file path
+ * @param handlers Parameter of type event_handlers (can handle on_load and pre_unload)
+ * @param extra_compiler_flags If you need any more flags, add here
  * @return t_lib_info* 
  */
-
-t_lib_info *register_shared_library(const char *source_path, event_handlers handlers)
+t_lib_info *register_shared_library(const char *source_path, event_handlers handlers, const char *extra_compiler_flags)
 {
 	t_lib_info *lib_info = find_open_lib(source_path);
 	if (lib_info) {
@@ -64,6 +65,13 @@ t_lib_info *register_shared_library(const char *source_path, event_handlers hand
 		if (lib_info->source_path[0] == '\0') {
 			setup_library(lib_info, source_path);
 			lib_info->handlers = handlers;
+			if (extra_compiler_flags) {
+				if (strnlen(extra_compiler_flags, MAX_COMPILE_FLAGS_LENGTH) >= MAX_COMPILE_FLAGS_LENGTH) {
+					fprintf(stderr, "|| ERROR || extra_compiler_flags can only have %d!\n", MAX_COMPILE_FLAGS_LENGTH);
+					exit(EXIT_FAILURE);
+				}
+				strncpy(lib_info->extra_compile_flags, extra_compiler_flags, MAX_COMPILE_FLAGS_LENGTH);
+			}
 			compile_shared_library(lib_info);
 
 			return lib_info;
@@ -161,13 +169,19 @@ void *get_lib_address(const t_lib_info *lib_info, const char *symbol_name)
 
 int compile_shared_library(const t_lib_info *lib_info)
 {
-	char command[700];
+	char command[2000];
 	
+	int count = 0;
 	#ifdef _WIN32
-		snprintf(command, sizeof(command), "gcc -shared -o %s %s -I %s%s", lib_info->lib_path, lib_info->source_path, HOTC_PATH, HOTC_INCLUDE_FINAL_PATH);
+		count = snprintf(command, sizeof(command), "gcc -shared -o %s %s -I %s%s", lib_info->lib_path, lib_info->source_path, HOTC_PATH, HOTC_INCLUDE_FINAL_PATH);
 	#else
-		snprintf(command, sizeof(command), "gcc -shared -fPIC -o %s %s -I %s%s", lib_info->lib_path, lib_info->source_path, HOTC_PATH, HOTC_INCLUDE_FINAL_PATH);
+		count = snprintf(command, sizeof(command), "gcc -shared -fPIC -o %s %s -I %s%s", lib_info->lib_path, lib_info->source_path, HOTC_PATH, HOTC_INCLUDE_FINAL_PATH);
 	#endif
+	if (lib_info->extra_compile_flags[0] != '\0') {
+		snprintf(command + count, sizeof(command) + count, " %s", lib_info->extra_compile_flags);
+	}
+
+	printf("build cmd: |%s|\n", command);
 
 	remove(lib_info->lib_path); // Remove old library file if it exists
 	int result = system(command);
