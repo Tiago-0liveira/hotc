@@ -9,14 +9,6 @@
 
 
 #define HOTC_INCLUDE_FINAL_PATH "includes/public"
-#ifndef HOTC_PATH
-	#if defined(__clang__) || defined(__GNUC__) || defined(_MSC_VER)
-		#pragma message("You have to define HOTC_PATH otherwise you cant use <hotc_shared.h> inside your shared libraries!")
-	#else
-		#warning "You have to define HOTC_PATH"
-	#endif
-	#define HOTC_PATH "./"
-#endif
 
 typedef void* t_lib_handle;
 
@@ -41,10 +33,17 @@ typedef struct {
 	func_ptr_event_handler pre_unload;
 } event_handlers;
 
+typedef struct {
+	func_ptr_event_handler before_check;
+	func_ptr_event_handler before_rebuild;
+	func_ptr_event_handler after_rebuild;
+	func_ptr_event_handler on_error;
+} update_lib_event_handlers;
+
 #define HOTC_DEFAULT_EVENTS (event_handlers) {NULL, NULL}
 #define HOTC_ON_LOAD(handler) (event_handlers) {handler, NULL}
 #define HOTC_PRE_UNLOAD(handler) (event_handlers) {NULL, handler}
-
+#define HOTC_DEFAULT_UPDATE_LIB_EVENT_HANDLERS (update_lib_event_handlers) {NULL, NULL, NULL, NULL}
 
 typedef struct s_lib_info {
 	int last_modified;
@@ -60,13 +59,19 @@ typedef struct s_lib_info {
 extern t_lib_info open_libs[MAX_OPEN_LIBS];
 
 // hot.c
-void		check_and_update_libs();
+void		check_and_update_libs(update_lib_event_handlers event_handlers);
 t_lib_info	*register_shared_library(const char *source_path, event_handlers handlers, const char *extra_compile_flags);
 void 		unregister_shared_library(const char *source_path);
 void		load_shared_library(t_lib_info *lib_info);
 int			unload_shared_library(t_lib_info *lib_info);
 void		*get_lib_address(const t_lib_info *lib_info, const char *symbol_name);
 int			compile_shared_library(const t_lib_info *lib_info);
+/**
+ * @brief This function is used to tell where hotc is located!
+ * 
+ * @param hotc_path New hotc_path
+ */
+void		HOTC_SET_PATH(const char *hotc_path);
 
 // utils.c
 void		reset_lib_info(t_lib_info *lib_info);

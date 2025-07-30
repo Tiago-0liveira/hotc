@@ -1,6 +1,7 @@
 #include <hotc.h>
 
-int get_file_last_modified(const char *filename) {
+int get_file_last_modified(const char *filename)
+{
 	struct stat attr;
 	if (stat(filename, &attr) != 0) {
 		perror("stat");
@@ -40,4 +41,10 @@ int mkdir_p(const char *dir)
 		p = slash + 1;
 	}
 	return 1;
+}
+
+int file_exists(const char *filename)
+{
+	struct stat attr;
+	return stat(filename, &attr) == 0;
 }

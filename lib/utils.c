@@ -112,6 +112,7 @@ char *get_lib_path(const char *source_path, const char *filename)
 		}
 	}
 	strncpy(lib_path + DLL_DIR_LEN, source_path + source_path_offset, until_slash_len - source_path_offset);
+	lib_path[DLL_DIR_LEN + until_slash_len - source_path_offset] = '\0';/* close string so we can mkdir */
 	mkdir_p(lib_path);/* make all necessary parent dirs */
 
 	#ifdef _WIN32

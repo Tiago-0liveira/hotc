@@ -9,8 +9,9 @@
 #endif
 
 t_lib_info open_libs[MAX_OPEN_LIBS] = { 0 };
+static const char *HOTC_PATH = "./";
 
-void check_and_update_libs()
+void check_and_update_libs(update_lib_event_handlers event_handlers)
 {
 	int mod_count = 0;
 	timestamp_t start = get_time_ms();
@@ -19,17 +20,22 @@ void check_and_update_libs()
 		if (lib_info->source_path[0] != '\0') {
 			int last_modified = get_file_last_modified(lib_info->source_path);
 			if (last_modified != lib_info->last_modified) {
+				if (event_handlers.before_check) { event_handlers.before_check(lib_info); }
 				if (lib_info->handle) {
 					printf("|| INFO || Library %s has been modified, reloading...\n", lib_info->name);
 				}
+				if (event_handlers.before_rebuild) { event_handlers.before_rebuild(lib_info); }
 				unload_shared_library(lib_info);
 				
 				remove(lib_info->lib_path); // Remove the old library file
 				if (compile_shared_library(lib_info) == -1) {
+					lib_info->last_modified = last_modified;
+					if (event_handlers.on_error) { event_handlers.on_error(lib_info); }
 					continue; // Ignore iteartion and try again after
 				}
 				
 				load_shared_library(lib_info);
+				if (event_handlers.after_rebuild) { event_handlers.after_rebuild(lib_info); }
 				lib_info->last_modified = last_modified;
 				mod_count++;
 			}
@@ -181,8 +187,6 @@ int compile_shared_library(const t_lib_info *lib_info)
 		snprintf(command + count, sizeof(command) + count, " %s", lib_info->extra_compile_flags);
 	}
 
-	printf("build cmd: |%s|\n", command);
-
 	remove(lib_info->lib_path); // Remove old library file if it exists
 	int result = system(command);
 	if (result != 0) {
@@ -190,4 +194,9 @@ int compile_shared_library(const t_lib_info *lib_info)
 		return -1; // Compilation failed
 	}
 	return 0; // Compilation successful
+}
+
+void HOTC_SET_PATH(const char *hotc_path)
+{
+	HOTC_PATH = hotc_path;
 }
