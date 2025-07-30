@@ -163,12 +163,8 @@ void *get_lib_address(const t_lib_info *lib_info, const char *symbol_name)
 
 	if (!symbol_address)
 	{
-		#ifdef HOTC_FLAG_ERROR_ON_INVALID_SYMBOL
-			printf("|| ERROR || Invalid symbol address for %s in library %s\n", symbol_name, lib_info->lib_path);
-			exit(EXIT_FAILURE);
-		#else
-			return NULL;
-		#endif
+		printf("|| ERROR || Invalid symbol address (%s) in file <%s>\n", symbol_name, lib_info->source_path);
+		return NULL;
 	}
 	return symbol_address;
 }

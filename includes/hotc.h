@@ -12,10 +12,6 @@
 
 typedef void* t_lib_handle;
 
-// FLAGS
-// This flag can be used to exit the program if an invalid symbol is encountered.(null address)
-#define HOTC_FLAG_ERROR_ON_INVALID_SYMBOL
-
 #define MAX_OPEN_LIBS 20
 #define MAX_NAME_LENGTH 256
 #define MAX_COMPILE_FLAGS_LENGTH 1024
