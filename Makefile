@@ -17,14 +17,15 @@ ifeq ($(OS),Windows_NT)
 	OK = [OK]
 
 	# Messages
-	MSG1 = @echo "Compiled Successfully $(OK)"
-	MSG2 = @echo "Cleaned Successfully $(OK)"
-	MSG3 = @echo "Cleaned $(NAME) Successfully $(OK)"
+	MSG1 = @echo Compiled Successfully $(OK)
+	MSG2 = @echo Cleaned $(OBJ_DIR) Successfully $(OK)
+	MSG3 = @echo Cleaned $(NAME) Successfully $(OK)
 
-	RM = del /Q /S
 	MKDIR = mkdir
 	MKDIR_BIN = if not exist "$(subst /,\,$(BIN_DIR))" mkdir "$(subst /,\,$(BIN_DIR))"
 	MKDIR_OBJ = if not exist "$(subst /,\,$(OBJ_DIR))" mkdir "$(subst /,\,$(OBJ_DIR))"
+	DELETE_OBJ = @if exist $(OBJ_DIR) rmdir /S /Q "$(subst /,\,$(OBJ_DIR))"
+	DELETE_BIN = @if exist $(BIN_DIR) rmdir /S /Q "$(subst /,\,$(BIN_DIR))"
 
 	EXE = .exe
 	STATIC_LIB = $(BIN_DIR)hotc.lib
@@ -41,13 +42,14 @@ else
 
 	# Messages
 	MSG1 = @echo "$(IGreen)Compiled Successfully $(OK)$(Color_Off)"
-	MSG2 = @echo "$(IYellow)Cleaned Successfully $(OK)$(Color_Off)"
+	MSG2 = @echo "$(IYellow)Cleaned $(OBJ_DIR) Successfully $(OK)$(Color_Off)"
 	MSG3 = @echo "$(ICyan)Cleaned $(NAME) Successfully $(OK)$(Color_Off)"
 
-	RM = rm -rf
 	MKDIR = mkdir -p
 	MKDIR_BIN = $(MKDIR) $(BIN_DIR)
 	MKDIR_OBJ = $(MKDIR) $(OBJ_DIR)
+	DELETE_OBJ = rm -rf $(OBJ_DIR)
+	DELETE_BIN = rm -rf $(BIN_DIR)
 
 	EXE =
 	STATIC_LIB = $(BIN_DIR)libhotc.a
@@ -79,22 +81,18 @@ ifeq ($(OS),Windows_NT)
 else
 	@$(MKDIR) $(BIN_DIR)$*
 	@$(CC) $(CFLAGS) $(INCLUDES) $< $(STATIC_LIB) -o $(BIN_DIR)$*/$*$(EXE) $(LINUX_FLAGS)
-endif
-	
+endif	
 	$(MSG1)
 	@echo Running Example [$*]:
 	@$(BIN_DIR)$*/$*$(EXE)
 
 # Clean rules
 clean:
-	@$(RM) $(subst /,\,$(OBJ_DIR))/*.o
+	@$(DELETE_OBJ)
 	$(MSG2)
 
 fclean: clean
-	@$(RM) $(subst /,\,$(OBJ_DIR))
-	@$(RM) $(subst /,\,$(BIN_DIR))
-	@$(RM) $(NAME)$(EXE)
-	$(RM) $(STATIC_LIB)
+	@$(DELETE_BIN)
 	$(MSG3)
 
 re: fclean all

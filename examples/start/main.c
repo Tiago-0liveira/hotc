@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 	register_shared_library("./examples/start/lib2.c", HOTC_ON_LOAD(LAMBDA_lib2), NULL);
 
 	while (1) {
-		check_and_update_libs();
+		check_and_update_libs(HOTC_DEFAULT_UPDATE_LIB_EVENT_HANDLERS);
 
 		if (print_message_ptr)
 			printf("libshared.c :: %s\n", print_message_ptr());
